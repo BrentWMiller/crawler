@@ -2,6 +2,8 @@ import { World, Engine, Render } from 'matter-js';
 
 export class WorldBuilder {
   constructor(canvas, debug = false) {
+    this.debug = debug;
+
     this.engine = Engine.create();
     this.world = this.engine.world;
 
@@ -18,8 +20,8 @@ export class WorldBuilder {
       options: {
         width: canvas.offsetWidth,
         height: canvas.offsetHeight,
-        wireframes: debug,
-        showAngleIndicator: debug,
+        wireframes: this.debug,
+        showAngleIndicator: this.debug,
       },
     });
 

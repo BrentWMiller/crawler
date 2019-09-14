@@ -7,7 +7,7 @@ window.addEventListener('load', (event) => {
 
 const init = () => {
   const canvas = document.getElementById('world');
-  const builder = new WorldBuilder(canvas, true);
+  const builder = new WorldBuilder(canvas);
 
   builder.init();
 

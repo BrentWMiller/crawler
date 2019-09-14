@@ -9,7 +9,6 @@ export class PersonEntity {
 
     this.options = {
       id: this.id,
-      fillStyle: '#ff0000',
     };
 
     this.matter = null;
