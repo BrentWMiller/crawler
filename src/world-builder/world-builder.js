@@ -1,19 +1,29 @@
 import { World, Engine, Render } from 'matter-js';
 
 export class WorldBuilder {
-  constructor(canvas) {
+  constructor(canvas, debug = false) {
     this.engine = Engine.create();
+    this.world = this.engine.world;
+
+    this.world.gravity = {
+      x: 0,
+      y: 0,
+    };
+
+    this.world.friction = 1;
+
     this.render = Render.create({
       element: canvas,
       engine: this.engine,
       options: {
         width: canvas.offsetWidth,
         height: canvas.offsetHeight,
-        wireframes: true,
-        showAngleIndicator: false,
+        wireframes: debug,
+        showAngleIndicator: debug,
       },
     });
-    World.add(this.engine.world, []);
+
+    World.add(this.world, []);
   }
 
   init() {
