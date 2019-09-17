@@ -4,7 +4,8 @@ import { PersonEntity } from '../person-entity/person-entity';
 export class Hero extends PersonEntity {
   constructor(engine, id, position, size) {
     super(engine, id, position, size);
-
+    this.canvas;
+    this.size = size;
     this.directionCodes = [65, 87, 68, 83];
     this.speed = 0.01;
 
@@ -17,12 +18,15 @@ export class Hero extends PersonEntity {
     };
 
     this.keys = [];
+    this.mousePosition = { x: 0, y: 0 };
   }
 
-  birth() {
-    this._handleMovement();
+  birth(canvas) {
+    this.canvas = canvas;
     this.matter.mass = 1;
     this.matter.frictionAir = 0.5;
+
+    this._handleMovement();
   }
 
   _handleMovement() {
@@ -42,10 +46,18 @@ export class Hero extends PersonEntity {
       }
     });
 
-    this._move();
+    window.addEventListener('mousemove', (e) => {
+      this.mousePosition = {
+        x: e.pageX,
+        y: e.pageY,
+      };
+    });
+
+    this._mouseLook();
+    this._keyMove();
   }
 
-  _move() {
+  _keyMove() {
     Events.on(this.engine, 'beforeTick', () => {
       if (this.keys.length === 0) {
         return;
@@ -61,6 +73,26 @@ export class Hero extends PersonEntity {
           this.matter.force = { x, y };
         }
       });
+    });
+  }
+
+  _mouseLook() {
+    Events.on(this.engine, 'beforeTick', () => {
+      const diffY = this.mousePosition.y - this.matter.position.y;
+      const diffX = this.mousePosition.x - this.matter.position.x;
+
+      const radians = Math.atan2(diffY, diffX);
+      let degrees = radians * (180 / Math.PI);
+
+      if (degrees < 0) {
+        degrees = 360 - -degrees;
+      }
+
+      const angle = degrees * (Math.PI / 180);
+
+      this.matter.angle = angle;
+
+      // console.log(this.matter.angle);
     });
   }
 }
