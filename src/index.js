@@ -7,7 +7,7 @@ window.addEventListener('load', (event) => {
 
 const init = () => {
   const canvas = document.getElementById('world');
-  const builder = new WorldBuilder(canvas);
+  const builder = new WorldBuilder(canvas, true);
 
   builder.init();
 
@@ -20,5 +20,5 @@ const init = () => {
   hero.draw();
   builder.addToWorld(hero.matter);
 
-  hero.birth();
+  hero.birth(canvas);
 };
