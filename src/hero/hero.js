@@ -8,6 +8,7 @@ export class Hero extends PersonEntity {
     this.size = size;
     this.directionCodes = [65, 87, 68, 83];
     this.speed = 0.01;
+    this.angle = 0;
 
     // Movement: W, A, S, D | x, y
     this.direction = {
@@ -92,9 +93,9 @@ export class Hero extends PersonEntity {
         degrees = 360 - -degrees;
       }
 
-      const angle = degrees * (Math.PI / 180);
+      this.angle = degrees * (Math.PI / 180);
 
-      Body.setAngle(this.matter, angle);
+      Body.setAngle(this.matter, this.angle);
     });
   }
 }
