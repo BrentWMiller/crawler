@@ -69,15 +69,12 @@ export class Hero extends PersonEntity {
         if (this.directionCodes.includes(key)) {
           const move = this.direction[key];
 
-          movement.x += move.x;
-          movement.y += move.y;
+          movement.x += move.x * this.speed;
+          movement.y += move.y * this.speed;
         }
       });
 
-      const x = movement.x * this.speed;
-      const y = movement.y * this.speed;
-
-      this.matter.force = { x, y };
+      this.matter.force = { x: movement.x, y: movement.y };
     });
   }
 
