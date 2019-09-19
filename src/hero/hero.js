@@ -1,4 +1,4 @@
-import { Events } from 'matter-js';
+import { Events, Body } from 'matter-js';
 import { PersonEntity } from '../person-entity/person-entity';
 
 export class Hero extends PersonEntity {
@@ -47,9 +47,11 @@ export class Hero extends PersonEntity {
     });
 
     window.addEventListener('mousemove', (e) => {
+      const canvasOffset = this.canvas.getBoundingClientRect();
+
       this.mousePosition = {
-        x: e.pageX,
-        y: e.pageY,
+        x: e.pageX - canvasOffset.left,
+        y: e.pageY - canvasOffset.top,
       };
     });
 
@@ -80,8 +82,8 @@ export class Hero extends PersonEntity {
 
   _mouseLook() {
     Events.on(this.engine, 'beforeTick', () => {
-      const diffY = this.mousePosition.y - this.matter.position.y;
-      const diffX = this.mousePosition.x - this.matter.position.x;
+      const diffX = this.mousePosition.x - (this.matter.position.x + this.size / 2);
+      const diffY = this.mousePosition.y - (this.matter.position.y + this.size / 2);
 
       const radians = Math.atan2(diffY, diffX);
       let degrees = radians * (180 / Math.PI);
@@ -92,9 +94,7 @@ export class Hero extends PersonEntity {
 
       const angle = degrees * (Math.PI / 180);
 
-      this.matter.angle = angle;
-
-      // console.log(this.matter.angle);
+      Body.setAngle(this.matter, angle);
     });
   }
 }
