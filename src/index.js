@@ -1,5 +1,5 @@
-import { WorldBuilder } from './world-builder/world-builder';
-import { Hero } from './hero/hero';
+import { WorldBuilder } from './world-builder';
+import { Hero } from './hero';
 
 window.addEventListener('load', (event) => {
   init();
