@@ -2,6 +2,19 @@ import { Events, Body } from 'matter-js';
 import { PersonEntity } from './person-entity';
 
 export class Hero extends PersonEntity {
+  canvas: any;
+  matter: any;
+  engine: Matter.Engine;
+  size: any;
+  speed: number;
+  angle: number;
+  keys: Array<number>;
+  directionCodes: Array<number>;
+  directionKeys: Object;
+  attackCodes: Array<number>;
+  attackKeys: Object;
+  mousePosition: any;
+
   constructor(engine, id, position, size) {
     super(engine, id, position, size);
 

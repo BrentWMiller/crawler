@@ -1,6 +1,13 @@
 import { Bodies } from 'matter-js';
 
 export class PersonEntity {
+  engine: Matter.Engine;
+  id: string;
+  position: any;
+  size: any;
+  options: Object;
+  matter: Matter.Bodies;
+
   constructor(engine, id, position, size) {
     this.engine = engine;
     this.id = id;
