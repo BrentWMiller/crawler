@@ -1,22 +1,41 @@
 import { Events, Body } from 'matter-js';
-import { PersonEntity } from './person-entity';
+import { PersonEntity, IPersonEntityPosition } from './person-entity';
+
+export interface IHeroDirectionKey {
+  [key: number]: {
+    id: string;
+    x: number;
+    y: number;
+  };
+}
+
+export interface IHeroAttackKey {
+  [key: number]: {
+    id: string;
+  };
+}
+
+export interface IHeroMousePosition {
+  x: number;
+  y: number;
+}
 
 export class Hero extends PersonEntity {
-  canvas: any;
-  matter: any;
+  canvas: HTMLElement;
+  matter: Matter.Body;
   engine: Matter.Engine;
-  size: any;
+  size: number;
   speed: number;
   angle: number;
   keys: Array<number>;
   directionCodes: Array<number>;
-  directionKeys: Object;
+  directionKeys: IHeroDirectionKey;
   attackCodes: Array<number>;
-  attackKeys: Object;
-  mousePosition: any;
+  attackKeys: IHeroAttackKey;
+  mousePosition: IHeroMousePosition;
 
-  constructor(engine, id, position, size) {
-    super(engine, id, position, size);
+  constructor(engine: Matter.Engine, label: string, position: IPersonEntityPosition, size: number) {
+    super(engine, label, position, size);
 
     // World
     this.canvas;
@@ -50,7 +69,7 @@ export class Hero extends PersonEntity {
     this.mousePosition = { x: 0, y: 0 };
   }
 
-  birth(canvas) {
+  birth(canvas: HTMLElement) {
     this.canvas = canvas;
     this.matter.mass = 1;
     this.matter.frictionAir = 0.5;
@@ -59,7 +78,7 @@ export class Hero extends PersonEntity {
   }
 
   _initEvents() {
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
       const index = this.keys.indexOf(e.keyCode);
 
       if (index === -1) {
@@ -67,7 +86,7 @@ export class Hero extends PersonEntity {
       }
     });
 
-    window.addEventListener('keyup', (e) => {
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
       const index = this.keys.indexOf(e.keyCode);
 
       if (index > -1) {
@@ -75,7 +94,7 @@ export class Hero extends PersonEntity {
       }
     });
 
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener('mousemove', (e: MouseEvent) => {
       const canvasOffset = this.canvas.getBoundingClientRect();
 
       this.mousePosition = {
@@ -111,9 +130,11 @@ export class Hero extends PersonEntity {
   }
 
   _handleLook() {
+    // calculates x,y differences between mouse and hero
     const diffX = this.mousePosition.x - (this.matter.position.x + this.size / 2);
     const diffY = this.mousePosition.y - (this.matter.position.y + this.size / 2);
 
+    // converts to degrees and handles 360 rotation
     const radians = Math.atan2(diffY, diffX);
     let degrees = radians * (180 / Math.PI);
 
