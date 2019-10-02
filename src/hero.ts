@@ -1,5 +1,6 @@
 import { Events, Body } from 'matter-js';
 import { PersonEntity, IPersonEntityPosition } from './person-entity';
+import { Attack } from './attack';
 
 export interface IHeroDirectionKey {
   [key: number]: {
@@ -150,7 +151,9 @@ export class Hero extends PersonEntity {
   _handleAttack() {
     this.keys.forEach((key) => {
       if (this.attackCodes.includes(key)) {
-        const attack = this.attackKeys[key];
+        const attack = new Attack(this.matter, this.attackKeys[key].id);
+
+        console.log(attack.type);
       }
     });
   }

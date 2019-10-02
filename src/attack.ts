@@ -1,9 +1,13 @@
 export class Attack {
+  entity: Matter.Body;
   type: string;
-  entity: any;
 
-  constructor(type, entity) {
-    this.type = type;
+  constructor(entity: Matter.Body, type: string) {
     this.entity = entity;
+    this.type = type;
+  }
+
+  test(): string {
+    return this.type;
   }
 }
