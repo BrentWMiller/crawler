@@ -1,21 +1,26 @@
 import { Bodies } from 'matter-js';
 
+export interface IPersonEntityPosition {
+  x: number;
+  y: number;
+}
+
 export class PersonEntity {
   engine: Matter.Engine;
-  id: string;
-  position: any;
-  size: any;
-  options: Object;
+  label: string;
+  position: IPersonEntityPosition;
+  size: number;
+  options: Matter.IBodyDefinition;
   matter: Matter.Bodies;
 
-  constructor(engine, id, position, size) {
+  constructor(engine: Matter.Engine, label: string, position: IPersonEntityPosition, size: number) {
     this.engine = engine;
-    this.id = id;
+    this.label = label;
     this.position = position;
     this.size = size;
 
     this.options = {
-      id: this.id,
+      label: this.label,
     };
 
     this.matter = null;
