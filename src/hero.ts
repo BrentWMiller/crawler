@@ -1,6 +1,7 @@
 import { Events, Body } from 'matter-js';
 import { PersonEntity, IPersonEntityPosition } from './person-entity';
 import { Attack } from './attack';
+import WorldBuilder from './world-builder';
 
 export interface IHeroDirectionKey {
   [key: number]: {
@@ -34,13 +35,14 @@ export class Hero extends PersonEntity {
   attackCodes: Array<number>;
   attackKeys: IHeroAttackKey;
   mousePosition: IHeroMousePosition;
+  attack: Attack;
 
-  constructor(engine: Matter.Engine, label: string, position: IPersonEntityPosition, size: number) {
-    super(engine, label, position, size);
+  constructor(label: string, position: IPersonEntityPosition, size: number) {
+    super(label, position, size);
 
     // World
-    this.canvas;
-    this.engine = engine;
+    this.canvas = WorldBuilder.getCanvas();
+    this.engine = WorldBuilder.getEngine();
 
     // Movement & Facing
     this.size = size;
@@ -70,10 +72,11 @@ export class Hero extends PersonEntity {
     this.mousePosition = { x: 0, y: 0 };
   }
 
-  birth(canvas: HTMLElement) {
-    this.canvas = canvas;
+  birth() {
     this.matter.mass = 1;
     this.matter.frictionAir = 0.5;
+
+    this.attack = new Attack(this.matter);
 
     this._initEvents();
   }
@@ -151,9 +154,8 @@ export class Hero extends PersonEntity {
   _handleAttack() {
     this.keys.forEach((key) => {
       if (this.attackCodes.includes(key)) {
-        const attack = new Attack(this.matter, this.attackKeys[key].id);
-
-        console.log(attack.type);
+        this.attack.setType(this.attackKeys[key].id);
+        this.attack.fire();
       }
     });
   }
