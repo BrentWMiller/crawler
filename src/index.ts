@@ -1,4 +1,4 @@
-import { WorldBuilder } from './world-builder';
+import WorldBuilder from './world-builder';
 import { Hero } from './hero';
 
 window.addEventListener('load', (event) => {
@@ -6,19 +6,15 @@ window.addEventListener('load', (event) => {
 });
 
 const init = () => {
-  const canvas = document.getElementById('world');
-  const builder = new WorldBuilder(canvas, true);
-
-  builder.init();
+  WorldBuilder.init();
 
   const heroPosition = {
     x: 400,
     y: 400,
   };
 
-  let hero = new Hero(builder.engine, 'player', heroPosition, 20);
+  let hero = new Hero('player', heroPosition, 20);
   hero.draw();
-  builder.addToWorld(hero.matter);
-
-  hero.birth(canvas);
+  WorldBuilder.addToWorld(hero.matter);
+  hero.birth();
 };
