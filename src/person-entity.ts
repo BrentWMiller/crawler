@@ -1,4 +1,5 @@
 import { Bodies } from 'matter-js';
+import WorldBuilder from './world-builder';
 
 export interface IPersonEntityPosition {
   x: number;
@@ -13,8 +14,8 @@ export class PersonEntity {
   options: Matter.IBodyDefinition;
   matter: Matter.Bodies;
 
-  constructor(engine: Matter.Engine, label: string, position: IPersonEntityPosition, size: number) {
-    this.engine = engine;
+  constructor(label: string, position: IPersonEntityPosition, size: number) {
+    this.engine = WorldBuilder.getEngine();
     this.label = label;
     this.position = position;
     this.size = size;
