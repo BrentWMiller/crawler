@@ -1,4 +1,9 @@
-import { World, Engine, Render } from 'matter-js';
+import { World, Engine, Render, Bodies } from 'matter-js';
+
+export interface ICanvasSize {
+  width: number;
+  height: number;
+}
 
 export class _WorldBuilder {
   debug: boolean;
@@ -21,8 +26,8 @@ export class _WorldBuilder {
       element: this.canvas,
       engine: this.engine,
       options: {
-        width: this.canvas.offsetWidth,
-        height: this.canvas.offsetHeight,
+        width: this.getCanvasSize().width,
+        height: this.getCanvasSize().height,
         wireframes: this.debug,
       },
     });
@@ -34,6 +39,13 @@ export class _WorldBuilder {
     return this.canvas;
   }
 
+  getCanvasSize(): ICanvasSize {
+    return {
+      width: this.getCanvas().offsetWidth,
+      height: this.getCanvas().offsetHeight,
+    };
+  }
+
   getEngine(): Matter.Engine {
     return this.engine;
   }
@@ -41,14 +53,33 @@ export class _WorldBuilder {
   init() {
     Engine.run(this.engine);
     Render.run(this.render);
+
+    this.addWorldBoundries();
   }
 
-  addToWorld(body: Matter.Body) {
+  addToWorld(body: Matter.Body | Array<Matter.Body>) {
     World.add(this.engine.world, body);
   }
 
   removeFromWorld(body: Matter.Body) {
     World.remove(this.engine.world, body);
+  }
+
+  private addWorldBoundries() {
+    /* prettier ignore */
+    const boundaries = [
+      Bodies.rectangle(this.getCanvasSize().width / 2, 0, this.getCanvasSize().width, 10),
+      Bodies.rectangle(this.getCanvasSize().width, this.getCanvasSize().height / 2, 10, this.getCanvasSize().height),
+      Bodies.rectangle(this.getCanvasSize().width / 2, this.getCanvasSize().height, this.getCanvasSize().width, 10),
+      Bodies.rectangle(0, this.getCanvasSize().height / 2, 10, this.getCanvasSize().height),
+    ];
+
+    boundaries.forEach((boundary) => {
+      boundary.isStatic = true;
+      boundary.restitution = 0.2;
+    });
+
+    this.addToWorld(boundaries);
   }
 }
 
