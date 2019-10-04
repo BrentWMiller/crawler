@@ -68,6 +68,6 @@ export class Attack {
     setTimeout(() => {
       WorldBuilder.removeFromWorld(particle);
       this.count -= 1;
-    }, 2000);
+    }, 3500);
   }
 }
