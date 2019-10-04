@@ -1,19 +1,24 @@
-import { Bodies, Body } from 'matter-js';
+import { Bodies, Body, Vector } from 'matter-js';
 import WorldBuilder from './world-builder';
+import { lengthDir, ILengthDir } from './formulas';
 
 export class Attack {
   entity: Matter.Body;
   type: string;
   mass: number;
   density: number;
-  frictionAir: number;
+  friction: number;
   count: number = 0;
+  size: number;
+  speed: number;
 
   constructor(entity: Matter.Body) {
     this.entity = entity;
     this.mass = 0.001;
     this.density = 0.005;
-    this.frictionAir = 0;
+    this.friction = 1;
+    this.size = 3;
+    this.speed = 20;
   }
 
   setType(type: string) {
@@ -21,7 +26,7 @@ export class Attack {
   }
 
   fire() {
-    if (this.count >= 100) {
+    if (this.count >= Infinity) {
       return;
     }
 
@@ -31,14 +36,28 @@ export class Attack {
       y: this.entity.position.y + Math.sin(this.entity.angle),
     };
 
-    const attackParticle: Matter.Body = Bodies.circle(heading.x, heading.y, 3, {
+    // Calculate origin offset so the attack isn't stacked
+    const lengthOffset: ILengthDir = lengthDir(10 + this.size, this.entity.angle);
+
+    // Set the final position
+    const particlePosition = {
+      x: heading.x + lengthOffset.x,
+      y: heading.y + lengthOffset.y,
+    };
+
+    // sets inertia
+    const inertia: Vector = {
+      x: Math.cos(this.entity.angle) * this.speed,
+      y: Math.sin(this.entity.angle) * this.speed,
+    };
+
+    const attackParticle: Matter.Body = Bodies.circle(particlePosition.x, particlePosition.y, this.size, {
       mass: this.mass,
       density: this.density,
-      friction: 0,
-      frictionAir: 0,
+      friction: this.friction,
     });
 
-    Body.setAngularVelocity(attackParticle, 10);
+    Body.setVelocity(attackParticle, inertia);
     WorldBuilder.addToWorld(attackParticle);
     this.count += 1;
 
@@ -49,6 +68,6 @@ export class Attack {
     setTimeout(() => {
       WorldBuilder.removeFromWorld(particle);
       this.count -= 1;
-    }, 500);
+    }, 2000);
   }
 }
