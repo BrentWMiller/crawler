@@ -37,8 +37,8 @@ export class Hero extends PersonEntity {
   mousePosition: IHeroMousePosition;
   attack: Attack;
 
-  constructor(label: string, position: IPersonEntityPosition, size: number) {
-    super(label, position, size);
+  constructor(label: string, position: IPersonEntityPosition, size: number, sprite: any) {
+    super(label, position, size, sprite);
 
     // World
     this.canvas = WorldBuilder.getCanvas();
@@ -78,10 +78,10 @@ export class Hero extends PersonEntity {
 
     this.attack = new Attack(this.matter);
 
-    this._initEvents();
+    this.initEvents();
   }
 
-  _initEvents() {
+  private initEvents() {
     window.addEventListener('keydown', (e: KeyboardEvent) => {
       const index = this.keys.indexOf(e.keyCode);
 
