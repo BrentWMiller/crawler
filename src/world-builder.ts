@@ -68,15 +68,18 @@ export class _WorldBuilder {
   private addWorldBoundries() {
     /* prettier ignore */
     const boundaries = [
-      Bodies.rectangle(this.getCanvasSize().width / 2, 0, this.getCanvasSize().width, 10),
-      Bodies.rectangle(this.getCanvasSize().width, this.getCanvasSize().height / 2, 10, this.getCanvasSize().height),
-      Bodies.rectangle(this.getCanvasSize().width / 2, this.getCanvasSize().height, this.getCanvasSize().width, 10),
-      Bodies.rectangle(0, this.getCanvasSize().height / 2, 10, this.getCanvasSize().height),
+      Bodies.rectangle(this.getCanvasSize().width / 2, 0, this.getCanvasSize().width, 30),
+      Bodies.rectangle(this.getCanvasSize().width, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
+      Bodies.rectangle(this.getCanvasSize().width / 2, this.getCanvasSize().height, this.getCanvasSize().width, 30),
+      Bodies.rectangle(0, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
     ];
 
     boundaries.forEach((boundary) => {
       boundary.isStatic = true;
       boundary.restitution = 0.2;
+      boundary.render = {
+        fillStyle: 'transparent',
+      };
     });
 
     this.addToWorld(boundaries);
