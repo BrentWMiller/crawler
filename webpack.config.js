@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const WriteFilePlugin = require('write-file-webpack-plugin');
 
 module.exports = {
   devtool: 'source-map',
@@ -38,6 +39,10 @@ module.exports = {
         ],
       },
       {
+        test: /\.(png|svg|jpg|gif)$/,
+        use: ['file-loader'],
+      },
+      {
         enforce: 'pre',
         test: /\.js$/,
         loader: 'source-map-loader',
@@ -48,7 +53,11 @@ module.exports = {
     stylesheet: path.resolve('src', 'main.scss'),
     main: path.resolve('src', 'index.ts'),
   },
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+  },
   plugins: [
+    new WriteFilePlugin(),
     new HtmlWebPackPlugin({
       template: './src/index.html',
       filename: './index.html',
