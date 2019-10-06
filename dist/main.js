@@ -20252,14 +20252,51 @@ module.exports.formatError = function(err) {
 
 /***/ }),
 
-/***/ "./src/assets/hero-base.png":
-/*!**********************************!*\
-  !*** ./src/assets/hero-base.png ***!
-  \**********************************/
+/***/ "./src/animation/wizard.ts":
+/*!*********************************!*\
+  !*** ./src/animation/wizard.ts ***!
+  \*********************************/
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-module.exports = __webpack_require__.p + "7989dff1512036fb9f826d00838fc584.png";
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.wizardAnimations = {
+    idle: {
+        x: 128,
+        y: 164,
+        h: 16,
+        w: 28,
+        frameCount: 4,
+    },
+    run: {
+        x: 192,
+        y: 164,
+        w: 16,
+        h: 28,
+        frameCount: 4,
+    },
+    jump: {
+        x: 256,
+        y: 164,
+        w: 16,
+        h: 28,
+        frameCount: 1,
+    },
+};
+
+
+/***/ }),
+
+/***/ "./src/assets/sprite-sheet.png":
+/*!*************************************!*\
+  !*** ./src/assets/sprite-sheet.png ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__.p + "e569500a4e5ee213c821388a51c08765.png";
 
 /***/ }),
 
@@ -20370,7 +20407,7 @@ class Hero extends person_entity_1.PersonEntity {
     constructor(label, position, size, sprite) {
         super(label, position, size, sprite);
         // World
-        this.canvas = world_builder_1.default.getCanvas();
+        this.canvas = world_builder_1.default.getWorld();
         this.engine = world_builder_1.default.getEngine();
         // Movement & Facing
         this.size = size;
@@ -20483,8 +20520,8 @@ class ImageLoader {
     loadImage(url) {
         return new Promise((resolve) => {
             const image = new Image();
-            image.onload = () => resolve(url);
-            image.onerror = (error) => resolve({ url, status: 'error', error: error });
+            image.onload = () => resolve({ element: image, url });
+            image.onerror = (error) => resolve(null);
             image.src = url;
         });
     }
@@ -20515,7 +20552,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const world_builder_1 = __webpack_require__(/*! ./world-builder */ "./src/world-builder.ts");
 const hero_1 = __webpack_require__(/*! ./hero */ "./src/hero.ts");
-const HeroSprite = __webpack_require__(/*! ./assets/hero-base.png */ "./src/assets/hero-base.png");
+const SpriteSheet = __webpack_require__(/*! ./assets/sprite-sheet.png */ "./src/assets/sprite-sheet.png");
+const wizard_1 = __webpack_require__(/*! ./animation/wizard */ "./src/animation/wizard.ts");
 window.addEventListener('load', (event) => {
     init();
 });
@@ -20525,7 +20563,11 @@ const init = () => __awaiter(void 0, void 0, void 0, function* () {
         x: 400,
         y: 400,
     };
-    let hero = new hero_1.Hero('player', heroPosition, 16, HeroSprite);
+    const heroSprite = {
+        url: SpriteSheet,
+        animations: wizard_1.wizardAnimations,
+    };
+    let hero = new hero_1.Hero('player', heroPosition, 16, heroSprite);
     yield hero.draw();
     hero.birth();
 });
@@ -20570,19 +20612,27 @@ class PersonEntity {
     }
     draw() {
         return new Promise((resolve) => __awaiter(this, void 0, void 0, function* () {
-            const url = yield new image_loader_1.ImageLoader().loadImage(this.sprite);
-            console.log(url);
+            const image = yield new image_loader_1.ImageLoader().loadImage(this.sprite.url);
             this.options.render = {
                 sprite: {
-                    texture: url,
-                    xScale: this.size,
-                    yScale: this.size,
+                    texture: image.url,
+                    xScale: 1,
+                    yScale: 1,
                 },
             };
             this.matter = matter_js_1.Bodies.rectangle(this.position.x, this.position.y, this.size, this.size, this.options);
             world_builder_1.default.addToWorld(this.matter);
+            this.playAnimation(image.element);
             resolve(true);
         }));
+    }
+    playAnimation(image, type = 'idle') {
+        const animation = this.sprite.animations[type];
+        if (!animation) {
+            throw Error(`Animation type of "${type}" does not exist`);
+        }
+        const ctx = world_builder_1.default.getCanvas().getContext('2d');
+        ctx.drawImage(image, animation.x, animation.y, animation.w, animation.h, this.matter.position.x, this.matter.position.y, 16, 16);
     }
 }
 exports.PersonEntity = PersonEntity;
@@ -20612,20 +20662,23 @@ class _WorldBuilder {
             element: this.canvas,
             engine: this.engine,
             options: {
-                width: this.getCanvasSize().width,
-                height: this.getCanvasSize().height,
+                width: this.getWorldSize().width,
+                height: this.getWorldSize().height,
                 wireframes: this.debug,
             },
         });
         matter_js_1.World.add(this.world, []);
     }
-    getCanvas() {
+    getWorld() {
         return this.canvas;
     }
-    getCanvasSize() {
+    getCanvas() {
+        return document.querySelector('canvas');
+    }
+    getWorldSize() {
         return {
-            width: this.getCanvas().offsetWidth,
-            height: this.getCanvas().offsetHeight,
+            width: this.getWorld().offsetWidth,
+            height: this.getWorld().offsetHeight,
         };
     }
     getEngine() {
@@ -20645,10 +20698,10 @@ class _WorldBuilder {
     addWorldBoundries() {
         /* prettier ignore */
         const boundaries = [
-            matter_js_1.Bodies.rectangle(this.getCanvasSize().width / 2, 0, this.getCanvasSize().width, 30),
-            matter_js_1.Bodies.rectangle(this.getCanvasSize().width, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
-            matter_js_1.Bodies.rectangle(this.getCanvasSize().width / 2, this.getCanvasSize().height, this.getCanvasSize().width, 30),
-            matter_js_1.Bodies.rectangle(0, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
+            matter_js_1.Bodies.rectangle(this.getWorldSize().width / 2, 0, this.getWorldSize().width, 30),
+            matter_js_1.Bodies.rectangle(this.getWorldSize().width, this.getWorldSize().height / 2, 30, this.getWorldSize().height),
+            matter_js_1.Bodies.rectangle(this.getWorldSize().width / 2, this.getWorldSize().height, this.getWorldSize().width, 30),
+            matter_js_1.Bodies.rectangle(0, this.getWorldSize().height / 2, 30, this.getWorldSize().height),
         ];
         boundaries.forEach((boundary) => {
             boundary.isStatic = true;
