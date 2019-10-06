@@ -4,6 +4,6 @@
     "target": "es6",
     "sourceMap": true
   },
-  "include": ["src/images.d.ts"],
+  "include": ["src/static.d.ts"],
   "exclude": ["node_modules"]
 }
