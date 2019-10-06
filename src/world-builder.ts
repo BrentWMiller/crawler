@@ -10,7 +10,7 @@ export class _WorldBuilder {
   engine: Matter.Engine;
   world: Matter.World;
   render: Matter.Render;
-  canvas: HTMLElement;
+  canvas: any;
 
   constructor() {
     this.debug = false;
@@ -26,8 +26,8 @@ export class _WorldBuilder {
       element: this.canvas,
       engine: this.engine,
       options: {
-        width: this.getCanvasSize().width,
-        height: this.getCanvasSize().height,
+        width: this.getWorldSize().width,
+        height: this.getWorldSize().height,
         wireframes: this.debug,
       },
     });
@@ -35,14 +35,18 @@ export class _WorldBuilder {
     World.add(this.world, []);
   }
 
-  getCanvas(): HTMLElement {
+  getWorld(): any {
     return this.canvas;
   }
 
-  getCanvasSize(): ICanvasSize {
+  getCanvas(): any {
+    return document.querySelector('canvas');
+  }
+
+  getWorldSize(): ICanvasSize {
     return {
-      width: this.getCanvas().offsetWidth,
-      height: this.getCanvas().offsetHeight,
+      width: this.getWorld().offsetWidth,
+      height: this.getWorld().offsetHeight,
     };
   }
 
@@ -68,10 +72,10 @@ export class _WorldBuilder {
   private addWorldBoundries() {
     /* prettier ignore */
     const boundaries = [
-      Bodies.rectangle(this.getCanvasSize().width / 2, 0, this.getCanvasSize().width, 30),
-      Bodies.rectangle(this.getCanvasSize().width, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
-      Bodies.rectangle(this.getCanvasSize().width / 2, this.getCanvasSize().height, this.getCanvasSize().width, 30),
-      Bodies.rectangle(0, this.getCanvasSize().height / 2, 30, this.getCanvasSize().height),
+      Bodies.rectangle(this.getWorldSize().width / 2, 0, this.getWorldSize().width, 30),
+      Bodies.rectangle(this.getWorldSize().width, this.getWorldSize().height / 2, 30, this.getWorldSize().height),
+      Bodies.rectangle(this.getWorldSize().width / 2, this.getWorldSize().height, this.getWorldSize().width, 30),
+      Bodies.rectangle(0, this.getWorldSize().height / 2, 30, this.getWorldSize().height),
     ];
 
     boundaries.forEach((boundary) => {
