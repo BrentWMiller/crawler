@@ -1,6 +1,8 @@
 import WorldBuilder from './world-builder';
 import { Hero } from './hero';
-import * as HeroSprite from './assets/hero-base.png';
+import * as SpriteSheet from './assets/sprite-sheet.png';
+import { ISprite } from './animation/animation.interface';
+import { wizardAnimations } from './animation/wizard';
 
 window.addEventListener('load', (event) => {
   init();
@@ -14,7 +16,12 @@ const init = async () => {
     y: 400,
   };
 
-  let hero = new Hero('player', heroPosition, 16, HeroSprite);
+  const heroSprite: ISprite = {
+    url: SpriteSheet,
+    animations: wizardAnimations,
+  };
+
+  let hero = new Hero('player', heroPosition, 16, heroSprite);
   await hero.draw();
   hero.birth();
 };
