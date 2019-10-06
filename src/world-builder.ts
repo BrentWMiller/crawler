@@ -1,4 +1,8 @@
-import { World, Engine, Render, Bodies } from 'matter-js';
+import { World, Engine, Bodies } from 'matter-js';
+import { Loader, autoDetectRenderer, Container } from 'pixi.js';
+import * as SpriteSheet from './animation/spritesheet.json';
+import * as SpriteSheetPNG from './animation/spritesheet.png';
+import { Hero } from './hero';
 
 export interface ICanvasSize {
   width: number;
@@ -9,8 +13,10 @@ export class _WorldBuilder {
   debug: boolean;
   engine: Matter.Engine;
   world: Matter.World;
-  render: Matter.Render;
+  render: any;
   canvas: any;
+  stage: PIXI.Container;
+  loader: PIXI.Loader;
 
   constructor() {
     this.debug = false;
@@ -22,17 +28,23 @@ export class _WorldBuilder {
 
     this.world.gravity = { x: 0, y: 0, scale: 0 };
 
-    this.render = Render.create({
-      element: this.canvas,
-      engine: this.engine,
-      options: {
-        width: this.getWorldSize().width,
-        height: this.getWorldSize().height,
-        wireframes: this.debug,
-      },
+    // Uses PIXI Renderer
+    this.render = autoDetectRenderer({
+      backgroundColor: 0x000000,
     });
 
+    // Sets canvas size
+    this.render.resize(this.getWorldSize().width, this.getWorldSize().height);
+
+    // Creates a PIXI container
+    this.stage = new Container();
+    this.getWorld().appendChild(this.render.view);
+
+    // Adds matterJS world
     World.add(this.world, []);
+
+    // Creates a PIXI loader
+    this.loader = Loader.shared;
   }
 
   getWorld(): any {
@@ -41,6 +53,14 @@ export class _WorldBuilder {
 
   getCanvas(): any {
     return document.querySelector('canvas');
+  }
+
+  getStage(): PIXI.Container {
+    return this.stage;
+  }
+
+  getLoader(): PIXI.Loader {
+    return this.loader;
   }
 
   getWorldSize(): ICanvasSize {
@@ -55,10 +75,20 @@ export class _WorldBuilder {
   }
 
   init() {
-    Engine.run(this.engine);
-    Render.run(this.render);
+    // Adds spritesheet JSON to loader
+    this.loader.add(SpriteSheet).load(async () => {
+      Engine.run(this.engine);
+      this.addWorldBoundries();
 
-    this.addWorldBoundries();
+      const heroPosition = {
+        x: 400,
+        y: 400,
+      };
+
+      let hero = new Hero('player', heroPosition, 16, 'wizzard_m_idle_anim_f');
+      await hero.draw();
+      hero.birth();
+    });
   }
 
   addToWorld(body: Matter.Body | Array<Matter.Body>) {
