@@ -41,7 +41,7 @@ export class Hero extends PersonEntity {
     super(label, position, size, sprite);
 
     // World
-    this.canvas = WorldBuilder.getCanvas();
+    this.canvas = WorldBuilder.getWorld();
     this.engine = WorldBuilder.getEngine();
 
     // Movement & Facing
