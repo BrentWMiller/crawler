@@ -1,7 +1,7 @@
-import { Bodies, IBodyRenderOptionsSprite, IBodyRenderOptions, World } from 'matter-js';
+import { Bodies } from 'matter-js';
 import WorldBuilder from './world-builder';
-import { ImageLoader } from './image-loader';
-import { ISprite } from './animation/animation.interface';
+import { AnimatedSprite } from 'pixi.js';
+import * as SpriteSheet from './animation/spritesheet.json';
 
 export interface IPersonEntityPosition {
   x: number;
@@ -15,15 +15,15 @@ export class PersonEntity {
   size: number;
   options: Matter.IBodyDefinition;
   matter: Matter.Body;
-  sprite: any;
+  animation: any;
   ready: boolean = false;
 
-  constructor(label: string, position: IPersonEntityPosition, size: number, sprite: ISprite) {
+  constructor(label: string, position: IPersonEntityPosition, size: number, animation: string) {
     this.engine = WorldBuilder.getEngine();
     this.label = label;
     this.position = position;
     this.size = size;
-    this.sprite = sprite;
+    this.animation = animation;
 
     this.options = {
       label: this.label,
@@ -34,34 +34,25 @@ export class PersonEntity {
 
   draw() {
     return new Promise(async (resolve) => {
-      const image: any = await new ImageLoader().loadImage(this.sprite.url);
-
-      this.options.render = {
-        sprite: {
-          texture: image.url,
-          xScale: 1,
-          yScale: 1,
-        },
-      };
-
       this.matter = Bodies.rectangle(this.position.x, this.position.y, this.size, this.size, this.options);
       WorldBuilder.addToWorld(this.matter);
 
-      this.playAnimation(image.element);
+      this.playAnimation(this.animation);
 
       resolve(true);
     });
   }
 
-  playAnimation(image: HTMLImageElement, type: string = 'idle') {
-    const animation = this.sprite.animations[type];
-
-    if (!animation) {
-      throw Error(`Animation type of "${type}" does not exist`);
+  playAnimation(type: string) {
+    if (!type) {
+      throw Error(`Missing animation type`);
     }
 
-    const ctx = WorldBuilder.getCanvas().getContext('2d');
+    const sheet: any = WorldBuilder.getLoader().resources[SpriteSheet];
+    const frames = sheet.data.animations[type];
 
-    ctx.drawImage(image, animation.x, animation.y, animation.w, animation.h, this.matter.position.x, this.matter.position.y, 16, 16);
+    let animation = new AnimatedSprite(frames);
+
+    // ctx.drawImage(image, animation.x, animation.y, animation.w, animation.h, this.matter.position.x, this.matter.position.y, 16, 16);
   }
 }
