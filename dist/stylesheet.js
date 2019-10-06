@@ -299,7 +299,7 @@ module.exports = function () {
 
 exports = module.exports = __webpack_require__(/*! ../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js")(false);
 // Module
-exports.push([module.i, "body {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 100vh;\n  margin: 0; }\n\n#world {\n  width: 800px;\n  height: 800px; }\n", ""]);
+exports.push([module.i, "body {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  width: 100vw;\n  height: 100vh;\n  margin: 0; }\n\n#world {\n  width: 100vw;\n  height: 100vh; }\n", ""]);
 
 
 
